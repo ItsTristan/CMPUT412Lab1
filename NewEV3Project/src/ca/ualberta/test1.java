@@ -12,15 +12,15 @@ import lejos.utility.Delay;
 
 public class test1 {
 	
-	public static final int motorspeed = 50;
+	public static final int motorspeed = 70;
 
 	public static void main(String[] args) {
 
 		EncoderMotor motorA =new NXTMotor (MotorPort.A);
 		EncoderMotor motorB =new NXTMotor (MotorPort.B);
 		
-		motorA.resetTachoCount();
-		System.out.println("Motor A tachometer:" + motorA.getTachoCount());
+		//motorA.resetTachoCount();
+		//System.out.println("Motor A tachometer:" + motorA.getTachoCount());
 
 		moveForward(motorA,motorB, 2);
 		System.out.println("Move forward 2");
@@ -53,7 +53,7 @@ public class test1 {
 		System.out.println("Motor A t:" + motorA.getTachoCount());
 
 		motorA.resetTachoCount();
-		//System.out.println(motorA.getTachoCount()-motorA.getTachoCount());
+		System.out.println("Motor A t: " + motorA.getTachoCount());
 		Delay.msDelay(2000);
 		Button.waitForAnyPress();
 		
@@ -62,9 +62,10 @@ public class test1 {
 	public static void moveForward(EncoderMotor motorA, EncoderMotor motorB, float rotations) {
 		motorA.setPower(motorspeed);
 		motorB.setPower(motorspeed);
+		int current_tach = motorA.getTachoCount();
 		motorA.forward();
 		motorB.forward();
-		while (motorA.getTachoCount() < 360*rotations)
+		while (motorA.getTachoCount()- current_tach < 360*rotations)
 			Delay.msDelay(10);
 		motorA.stop();
 		motorB.stop();
@@ -82,9 +83,10 @@ public class test1 {
 	public static void turnClockwise(EncoderMotor motorA, EncoderMotor motorB, int degree) {
 		motorA.setPower(motorspeed);
 		motorB.setPower(motorspeed);
+		int current_tach = motorA.getTachoCount();
 		motorA.forward();
 		motorB.backward();
-		while (motorA.getTachoCount() < 2*degree)
+		while (motorA.getTachoCount()-current_tach < 3*degree)
 			Delay.msDelay(10);
 		motorA.stop();
 		motorB.stop();
