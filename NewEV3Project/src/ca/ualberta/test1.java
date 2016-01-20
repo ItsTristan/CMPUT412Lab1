@@ -185,9 +185,12 @@ public class test1 {
 			float tA = motorA.getTachoCount();
 			float tB = motorB.getTachoCount();
 			
+			float speedA = tA - startA;
+			float speedB = tB - startB;
 			// convert wheel diameter to radius.
 			// meanwheeldistance becomes the turn radius
-			rot_amt += ((tA - startA) + (tB - startB)) * wheeldiameter / (2*meanwheeldistance);
+			rot_amt += ((speedA) + (speedB)) * wheeldiameter / (2*meanwheeldistance);
+			
 			
 			System.out.println("Distance = " + rot_amt);
 
@@ -215,11 +218,19 @@ public class test1 {
 	public static void moveForward(EncoderMotor motorA, EncoderMotor motorB, float rotations) {
 		motorA.setPower(motorspeed);
 		motorB.setPower(motorspeed);
-		int current_tach = motorA.getTachoCount();
+		int startA = motorA.getTachoCount();
+		int prevAt = startA;
+		int prevBt = motorB.getTachoCount();
 		motorA.forward();
 		motorB.forward();
-		while (motorA.getTachoCount()- current_tach < 360*rotations)
+		while (motorA.getTachoCount()- startA < 360*rotations){
+			int tA = motorA.getTachoCount();
+			int tB = motorB.getTachoCount();
+			correctSpeed(motorA, motorB, tA-prevAt, tB-prevBt);
 			Delay.msDelay(5);
+			prevAt = tA;
+			prevBt = tB;
+		}
 		motorA.stop();
 		motorB.stop();
 	}
@@ -277,7 +288,7 @@ public class test1 {
 		while (travel < degrees) {
 			int tA = motorA.getTachoCount();
 			int tB = motorB.getTachoCount();
-
+			
 			heading += ((tA - startA) - (tB - startB)) / 4;
 			System.out.println("Heading = " + heading);
 
@@ -290,6 +301,28 @@ public class test1 {
 		motorB.stop();
 	}
 	
+	public static void correctSpeed(EncoderMotor motorA, EncoderMotor motorB, int diffA, int diffB){
+		int difference = Math.abs(diffA)-Math.abs(diffB);
+		int bSpeed = motorB.getSpeed();
+		int aSpeed = motorA.getSpeed();
+		
+		if (difference > 5){
+			if (bSpeed <= 95){
+				motorB.setPower(bSpeed+1);
+			}
+			else{
+				motorA.setPower(aSpeed-1);
+			}
+		}
+		if (difference < -5){
+			if (aSpeed <= 95){
+				motorA.setPower(aSpeed+1);
+			}
+			else{
+				motorB.setPower(bSpeed-1);
+			}
+		}
+	}
 		
 	public static boolean check_fields(int source, int flag) {
 		return (source & flag) != 0;
