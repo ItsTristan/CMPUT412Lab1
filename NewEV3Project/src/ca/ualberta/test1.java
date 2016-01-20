@@ -24,30 +24,37 @@ public class test1 {
 	public static final float maxwheeldistance = 156f;
 	
 	public static float heading = 0;
+	
+	public static int mode = 1; // change this sometime
 
 	public static void main(String[] args) {
-
-		EncoderMotor motorA =new NXTMotor (MotorPort.A);
-		EncoderMotor motorB =new NXTMotor (MotorPort.B);
 		
-		motorA.resetTachoCount();
-		motorB.resetTachoCount();
-		
-		if (manual_control(motorA, motorB)) {
-			return;
+		switch(mode) {
+		case 0:
+			EncoderMotor motorA =new NXTMotor (MotorPort.A);
+			EncoderMotor motorB =new NXTMotor (MotorPort.B);
+			
+			motorA.resetTachoCount();
+			motorB.resetTachoCount();
+			manual_control(motorA,motorB);
+			break;
+		case 1:
+			deadReckoning.main(args);
+			break;
 		}
-
-		driveSquare(motorA, motorB);
-		
-		//motorA.resetTachoCount();
-		//System.out.println("Motor A tachometer:" + motorA.getTachoCount());
-		
-		System.out.println("Motor A t:" + motorA.getTachoCount());
-
-		motorA.resetTachoCount();
-		System.out.println("Motor A t: " + motorA.getTachoCount());
-		Delay.msDelay(2000);
-		Button.waitForAnyPress();
+		return;
+//
+//		driveSquare(motorA, motorB);
+//		
+//		//motorA.resetTachoCount();
+//		//System.out.println("Motor A tachometer:" + motorA.getTachoCount());
+//		
+//		System.out.println("Motor A t:" + motorA.getTachoCount());
+//
+//		motorA.resetTachoCount();
+//		System.out.println("Motor A t: " + motorA.getTachoCount());
+//		Delay.msDelay(2000);
+//		Button.waitForAnyPress();
 	}
 	
 	/**
@@ -303,8 +310,8 @@ public class test1 {
 	
 	public static void correctSpeed(EncoderMotor motorA, EncoderMotor motorB, int diffA, int diffB){
 		int difference = Math.abs(diffA)-Math.abs(diffB);
-		int bSpeed = motorB.getSpeed();
-		int aSpeed = motorA.getSpeed();
+		int bSpeed = motorB.getPower();
+		int aSpeed = motorA.getPower();
 		
 		if (difference > 5){
 			if (bSpeed <= 95){
