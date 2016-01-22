@@ -23,7 +23,7 @@ public class test1 {
 	
 	public static float heading = 0;
 	
-	public static int mode = 0; // change this sometime
+	public static int mode = 1; // change this sometime
 
 	public static void main(String[] args) {
 		
