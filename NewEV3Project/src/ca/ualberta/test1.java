@@ -5,8 +5,6 @@ package ca.ualberta;
 */
 
 import lejos.hardware.Button;
-import lejos.hardware.motor.NXTMotor;
-import lejos.hardware.port.MotorPort;
 import lejos.robotics.EncoderMotor;
 import lejos.utility.Delay;
 
@@ -25,36 +23,19 @@ public class test1 {
 	
 	public static float heading = 0;
 	
-	public static int mode = 1; // change this sometime
+	public static int mode = 0; // change this sometime
 
 	public static void main(String[] args) {
 		
 		switch(mode) {
 		case 0:
-			EncoderMotor motorA =new NXTMotor (MotorPort.A);
-			EncoderMotor motorB =new NXTMotor (MotorPort.B);
-			
-			motorA.resetTachoCount();
-			motorB.resetTachoCount();
-			manual_control(motorA,motorB);
+			manual_control();
 			break;
 		case 1:
 			deadReckoning.main(args);
 			break;
 		}
-		return;
-//
-//		driveSquare(motorA, motorB);
-//		
-//		//motorA.resetTachoCount();
-//		//System.out.println("Motor A tachometer:" + motorA.getTachoCount());
-//		
-//		System.out.println("Motor A t:" + motorA.getTachoCount());
-//
-//		motorA.resetTachoCount();
-//		System.out.println("Motor A t: " + motorA.getTachoCount());
-//		Delay.msDelay(2000);
-//		Button.waitForAnyPress();
+		
 	}
 	
 	/**
@@ -69,10 +50,14 @@ public class test1 {
 	 * @param motorB
 	 * @return
 	 */
-	public static boolean manual_control(EncoderMotor motorA, EncoderMotor motorB) {
+	public static void manual_control() {
+		SaferMotor motorA = RobotInfo.getMotorA();
+		SaferMotor motorB = RobotInfo.getMotorB();
+		
 		while (true) {
 			System.out.println("Waiting for input...");
 			int btn = Button.waitForAnyPress();
+			
 			if (check_fields(btn, Button.ID_LEFT))
 				turnCounterClockwise(motorA, motorB);
 			else if (check_fields(btn, Button.ID_RIGHT))
@@ -80,12 +65,15 @@ public class test1 {
 			else if (check_fields(btn, Button.ID_UP))
 				moveForward(motorA, motorB, 1);
 			else if (check_fields(btn, Button.ID_ESCAPE))
-				return true;
+				break;
 			else if (check_fields(btn, Button.ID_ENTER))
 				driveMenuOption(motorA, motorB);
 			else
 				System.out.println("Invalid input.");
 		}
+
+		motorA.close();
+		motorB.close();
 	}
 	
 	/***
@@ -180,8 +168,8 @@ public class test1 {
 		motorA.setPower(motorspeed);
 		motorB.setPower(motorspeed);
 		
-		float startA = motorA.getTachoCount();
-		float startB = motorB.getTachoCount();
+		float prevA = motorA.getTachoCount();
+		float prevB = motorB.getTachoCount();
 		
 		motorA.forward();
 		motorB.flt();
@@ -189,20 +177,20 @@ public class test1 {
 		float rot_amt = 0f;
 		
 		while (rot_amt < 360f) {
-			float tA = motorA.getTachoCount();
-			float tB = motorB.getTachoCount();
+			float currentA = motorA.getTachoCount();
+			float currentB = motorB.getTachoCount();
 			
-			float speedA = tA - startA;
-			float speedB = tB - startB;
+			float speedA = currentA - prevA;
+			float speedB = currentB - prevB;
 			// convert wheel diameter to radius.
 			// meanwheeldistance becomes the turn radius
-			rot_amt += ((speedA) + (speedB)) * wheeldiameter / (2*meanwheeldistance);
+			rot_amt += (speedA + speedB) * wheeldiameter / (2*meanwheeldistance);
 			
 			
 			System.out.println("Distance = " + rot_amt);
 
-			startA = tA;
-			startB = tB;
+			prevA = currentA;
+			prevB = currentB;
 		}
 		
 		motorA.stop();
@@ -225,9 +213,12 @@ public class test1 {
 	public static void moveForward(EncoderMotor motorA, EncoderMotor motorB, float rotations) {
 		motorA.setPower(motorspeed);
 		motorB.setPower(motorspeed);
+		
 		int startA = motorA.getTachoCount();
+		
 		int prevAt = startA;
 		int prevBt = motorB.getTachoCount();
+		
 		motorA.forward();
 		motorB.forward();
 		while (motorA.getTachoCount()- startA < 360*rotations){
@@ -243,50 +234,59 @@ public class test1 {
 	}
 	
 	public static void turnCounterClockwise(EncoderMotor motorA, EncoderMotor motorB) {
-		turnCounterClockwise(motorA, motorB, 90);
+//		turnCounterClockwise(motorA, motorB, 90);
+		turnClockwise(motorB, motorA, 90);
 	}
 	
-	public static void turnCounterClockwise(EncoderMotor motorA, EncoderMotor motorB, int degrees) {
-		// CounterClockwise and Clockwise can be factored together more nicely,
-		// but pay attention to the signs on the heading counter.
-		motorA.setPower(motorspeed);
-		motorB.setPower(motorspeed);
-		int startA = motorA.getTachoCount();
-		int startB = motorB.getTachoCount();
-		float travel = 0f;
-		
-		motorA.backward();
-		motorB.forward();
-		
-		while (travel < degrees) {
-			int tA = motorA.getTachoCount();
-			int tB = motorB.getTachoCount();
-
-			heading -= ((tB - startB) - (tA - startA)) / 4;
-			System.out.println("Heading = " + heading);
-
-			travel += (-(tA - startA) + (tB - startB)) / 4;
-
-			startA = tA;
-			startB = tB;
-		}
-		motorA.stop();
-		motorB.stop();
-	}
+//	public static void turnCounterClockwise(EncoderMotor motorA, EncoderMotor motorB, int degrees) {
+//		// CounterClockwise and Clockwise can be factored together more nicely,
+//		// but pay attention to the signs on the heading counter.
+//		motorA.setPower(motorspeed);
+//		motorB.setPower(motorspeed);
+//		
+//		int prevA = motorA.getTachoCount();
+//		int prevB = motorB.getTachoCount();
+//		
+//		float travel = 0f;
+//		
+//		motorA.backward();
+//		motorB.forward();
+//		
+//		while (travel < degrees) {
+//			int tA = motorA.getTachoCount();
+//			int tB = motorB.getTachoCount();
+//
+//			heading += ((tA - prevA) - (tB - prevB) ) / 4;
+//
+//			travel -= ((tA - prevA) - (tB - prevB)) / 4;
+//
+//			prevA = tA;
+//			prevB = tB;
+//		}
+//		
+//		System.out.println("Heading = " + heading);
+//		
+//		motorA.stop();
+//		motorB.stop();
+//	}
 	
 	public static void turnClockwise(EncoderMotor motorA, EncoderMotor motorB) {
 		turnClockwise(motorA, motorB, 90);
 	}
 	
+	/**
+	 * Rotates by keeping track of how far around the circle it has
+	 * rotated.
+	 * @param motorA
+	 * @param motorB
+	 * @param degrees
+	 */
 	public static void turnClockwise(EncoderMotor motorA, EncoderMotor motorB, float degrees) {
-		// Rotates by keeping track of how far around the circle it has
-		// rotated. To get how much each wheel needs to rotate,
-		// just multiply the desired rotation amount by the ratio
-		// between the turning radius and the wheel radius.
 		motorA.setPower(motorspeed);
 		motorB.setPower(motorspeed);
-		int startA = motorA.getTachoCount();
-		int startB = motorB.getTachoCount();
+		
+		int prevA = motorA.getTachoCount();
+		int prevB = motorB.getTachoCount();
 		float travel = 0f;
 		
 		motorA.forward();
@@ -296,18 +296,26 @@ public class test1 {
 			int tA = motorA.getTachoCount();
 			int tB = motorB.getTachoCount();
 			
-			heading += ((tA - startA) - (tB - startB)) / 4;
+			heading += ((tA - prevA) - (tB - prevB)) / 4;
 			System.out.println("Heading = " + heading);
 
-			travel += ((tA - startA) - (tB - startB)) / 4;
+			travel += ((tA - prevA) - (tB - prevB)) / 4;
 
-			startA = tA;
-			startB = tB;
+			prevA = tA;
+			prevB = tB;
 		}
 		motorA.stop();
 		motorB.stop();
 	}
 	
+	/**
+	 * Adjusts the motor power so they are closer to rotating
+	 * at the same speed.
+	 * @param motorA
+	 * @param motorB
+	 * @param diffA The differential of the motor 
+	 * @param diffB
+	 */
 	public static void correctSpeed(EncoderMotor motorA, EncoderMotor motorB, int diffA, int diffB){
 		int difference = Math.abs(diffA)-Math.abs(diffB);
 		int bSpeed = motorB.getPower();
@@ -334,5 +342,6 @@ public class test1 {
 	public static boolean check_fields(int source, int flag) {
 		return (source & flag) != 0;
 	}
-
+	
+	
 }
