@@ -9,6 +9,7 @@ public class SaferMotor extends NXTMotor {
 	
 	public SaferMotor(Port port) {
 		super(port);
+		super.resetTachoCount();
 	}
 	
 //	@Override
@@ -22,9 +23,13 @@ public class SaferMotor extends NXTMotor {
 		return super.getTachoCount() - tachocount;
 	}
 	
-	public int getTachoDifferential() {
+	public int getTachoDiff() {
 		int result = this.getTachoCount() - prevtacho;
-		prevtacho = this.getTachoCount();
+		prevtacho += result;
 		return result;
+	}
+	
+	public int getRealTachoCount() {
+		return super.getTachoCount();
 	}
 }

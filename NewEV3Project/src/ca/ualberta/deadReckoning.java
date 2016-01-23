@@ -1,5 +1,6 @@
 package ca.ualberta;
 
+import lejos.hardware.Button;
 import lejos.utility.Delay;
 
 public class deadReckoning {
@@ -16,19 +17,22 @@ public class deadReckoning {
 		      {-50, 80, 2}
 		    };
 	
-	public static void main(String[] args) {
+//	public static void main(String[] args) {		// Uncomment this to make this a compile target
+		public static void main() {
 		SaferMotor motorA = RobotInfo.getMotorA();
 		SaferMotor motorB = RobotInfo.getMotorB();
 		
 		motorA.resetTachoCount();
 		motorB.resetTachoCount();
+
+		double distancePerTick = wheeldiameter*Math.PI/360;	// = 2pi*r / 360 = arcdistance
 		
 		for (int i = 0; i<3; i++){
 			motorA.setPower(command[i][0]);
 			motorB.setPower(command[i][1]);
 			motorA.forward();
 			motorB.forward();
-			
+
 			motorA.resetTachoCount();
 			motorB.resetTachoCount();
 			long now = System.currentTimeMillis();
@@ -39,19 +43,23 @@ public class deadReckoning {
 				// heading = heading + deltaHeading
 				// deltaX = deltaDistance* cos(heading)
 				// deltaY = deltaDistance* sin(heading)
-				heading += (motorA.getTachoDifferential() - motorB.getTachoDifferential())
-									*(wheeldiameter/(2*wheeltowheeldiameter)); 
-				double d_distance = (motorA.getTachoDifferential() + motorB.getTachoDifferential()/2) 
-									* (wheeldiameter*Math.PI/360); 
-				x_loc += d_distance*Math.cos(Math.toRadians(heading));
-				y_loc += d_distance*Math.sin(Math.toRadians(heading));		
-				Delay.msDelay(10);
+				double d_distance = (motorA.getTachoDiff()+motorB.getTachoDiff())/2 
+						* distancePerTick;
+				
+				
+				heading += (motorA.getTachoDiff() - motorB.getTachoDiff())
+									*(wheeldiameter/(2*wheeltowheeldiameter));
+				
+				x_loc += d_distance*Math.cos(Math.toRadians(heading+90));
+				y_loc += d_distance*Math.sin(Math.toRadians(heading+90));
 			}	
-			System.out.format("X = %.2f \nY = %.2f \n Heading = %.2f degrees", x_loc, y_loc, heading);
+			System.out.format("X = %.2f \nY = %.2f \n Heading = %.2f degrees\n\n", x_loc, y_loc, heading);
 		}
 		motorA.stop();
 		motorB.stop();
 		motorA.close();
 		motorB.close();
+		
+		Button.waitForAnyPress();
 	}
 }

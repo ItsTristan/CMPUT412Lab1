@@ -32,7 +32,10 @@ public class test1 {
 			manual_control();
 			break;
 		case 1:
-			deadReckoning.main(args);
+			deadReckoning.main();
+			break;
+		case 2:
+			runAssertions();
 			break;
 		}
 		
@@ -343,5 +346,56 @@ public class test1 {
 		return (source & flag) != 0;
 	}
 	
+	
+	public static void runAssertions() {
+		System.out.println("Running tests...");
+		
+		SaferMotor motorA = RobotInfo.getMotorA();
+		SaferMotor motorB = RobotInfo.getMotorB(); 
+		
+		motorA.resetTachoCount();
+		motorB.resetTachoCount();
+
+		int prevA = motorA.getRealTachoCount();
+		int prevB = motorB.getRealTachoCount();
+		
+		motorA.setPower(80);
+		motorB.setPower(60);
+		
+		motorA.forward();
+		motorB.forward();
+
+		System.out.println("Start tacho A = " + prevA);
+		System.out.println("Start tacho B = " + prevB);
+
+		Delay.msDelay(1000);
+		
+		System.out.println("Mid tacho A = " + motorA.getRealTachoCount());
+		System.out.println("Mid tacho B = " + motorB.getRealTachoCount());
+		
+		System.out.println("Speed A = " + (motorA.getRealTachoCount() - prevA));
+		System.out.println("Speed B = " + (motorB.getRealTachoCount() - prevB));
+
+		System.out.println("AutoSpeed A = " + motorA.getTachoDiff());
+		System.out.println("AutoSpeed B = " + motorB.getTachoDiff());
+
+		prevA = motorA.getRealTachoCount();
+		prevB = motorB.getRealTachoCount();
+		
+		Delay.msDelay(1000);
+		
+		motorA.stop();
+		motorB.stop();
+		
+		System.out.println("End tacho A = " + motorA.getRealTachoCount());
+		System.out.println("End tacho B = " + motorB.getRealTachoCount());
+		
+		System.out.println("Speed A = " + (motorA.getRealTachoCount() - prevA));
+		System.out.println("Speed B = " + (motorB.getRealTachoCount() - prevB));
+
+		System.out.println("AutoSpeed A = " + motorA.getTachoDiff());
+		System.out.println("AutoSpeed B = " + motorB.getTachoDiff());
+		
+	}
 	
 }
