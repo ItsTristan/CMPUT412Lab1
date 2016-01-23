@@ -23,11 +23,14 @@ public class test1 {
 	
 	public static float heading = 0;
 	
-	public static int mode = 1; // change this sometime
+	public static int mode = 2; // change this sometime
 
 	public static void main(String[] args) {
 		
 		switch(mode) {
+		case -1:
+			runAssertions();
+			break;
 		case 0:
 			manual_control();
 			break;
@@ -35,7 +38,7 @@ public class test1 {
 			deadReckoning.main();
 			break;
 		case 2:
-			runAssertions();
+			Braitenberg.main();
 			break;
 		}
 		

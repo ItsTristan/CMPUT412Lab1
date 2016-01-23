@@ -58,7 +58,7 @@ public class RobotInfo {
 		if (sensorB == null) {
 			sensorB = new NXTLightSensor(SensorPort.S2);
 		}
-		return sensorA;
+		return sensorB;
 	}
 	
 }
