@@ -1,20 +1,19 @@
 package ca.ualberta;
 
 import lejos.hardware.Button;
-import lejos.utility.Delay;
 
 public class deadReckoning {
 	public static final double wheeldiameter = 56;
 	public static final double wheelwidth = 28;
 	public static final double wheeltowheeldiameter = 126.5;
 	public static double heading = 0;
-	public static float x_loc = 0;
-	public static float y_loc = 0;
+	public static double x_loc = 0;
+	public static double y_loc = 0;
 	
 	static int[][] command = {
-		      { 80, 60, 2},
-		      { 60, 60, 1},
-		      {-50, 80, 2}
+		      { 80, 40, 1},
+		      { 80, 80, 1},
+		      {80, 80, 1}
 		    };
 	
 //	public static void main(String[] args) {		// Uncomment this to make this a compile target
@@ -33,27 +32,43 @@ public class deadReckoning {
 			motorA.forward();
 			motorB.forward();
 
-			motorA.resetTachoCount();
-			motorB.resetTachoCount();
+			
+			
+			double prevA = motorA.getRealTachoCount();
+			double prevB = motorB.getRealTachoCount();
+			
+		
 			long now = System.currentTimeMillis();
-			while (System.currentTimeMillis()-now < command[i][2]*1000){
-				// distance per tick: wheeldiameter/2 (in degrees)
+			while (System.currentTimeMillis()-now < command[i][2]*1500){
+				// distance per tick: wheeldiameter*pi/360 (in degrees)
 				// deltaHeading = (right ticks -  left ticks)* (wheeldiameter/(2*wheeltowheeldiameter))
-				// deltaDistance = (left ticks + right ticks/2)* (wheeldiameter*pi/360)
+				// deltaDistance = (left ticks + right ticks)/2* (wheeldiameter*pi/360)
 				// heading = heading + deltaHeading
 				// deltaX = deltaDistance* cos(heading)
 				// deltaY = deltaDistance* sin(heading)
-				double d_distance = (motorA.getTachoDiff()+motorB.getTachoDiff())/2 
+				double currentA = motorA.getRealTachoCount();
+				double currentB = motorB.getRealTachoCount();
+				
+				double speedA = currentA - prevA;
+				double speedB = currentB - prevB;
+				
+				double d_distance = (speedA+speedB)/2 
 						* distancePerTick;
+				heading += (speedB-speedA)*(wheeldiameter/(2*wheeltowheeldiameter));
 				
+				//double d_distance = (motorA.getTachoDiff()+motorB.getTachoDiff())/2 
+						//* distancePerTick;
 				
-				heading += (motorA.getTachoDiff() - motorB.getTachoDiff())
-									*(wheeldiameter/(2*wheeltowheeldiameter));
+				//heading += (motorA.getTachoDiff() - motorB.getTachoDiff())
+									//*(wheeldiameter/(2*wheeltowheeldiameter));
 				
-				x_loc += d_distance*Math.cos(Math.toRadians(heading+90));
-				y_loc += d_distance*Math.sin(Math.toRadians(heading+90));
+				x_loc += d_distance*Math.cos(Math.toRadians(heading));
+				y_loc += d_distance*Math.sin(Math.toRadians(heading));
+				
+				prevA = currentA;
+				prevB = currentB;
 			}	
-			System.out.format("X = %.2f \nY = %.2f \n Heading = %.2f degrees\n\n", x_loc, y_loc, heading);
+			System.out.format("X = %.2f cm\nY = %.2f cm\n Heading = %.2f degrees\n\n", x_loc/10, y_loc/10, heading);
 		}
 		motorA.stop();
 		motorB.stop();

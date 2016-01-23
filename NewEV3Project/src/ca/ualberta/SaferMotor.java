@@ -14,7 +14,7 @@ public class SaferMotor extends NXTMotor {
 	
 //	@Override
 	public void resetTachoCount() {
-		tachocount = this.getTachoCount();
+		tachocount = super.getTachoCount();
 		prevtacho = tachocount;
 	}
 	
