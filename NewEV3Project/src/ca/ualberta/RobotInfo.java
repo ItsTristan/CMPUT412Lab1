@@ -19,7 +19,6 @@ public class RobotInfo {
 	public static SaferMotor getMotorA() {
 		if (motorA == null) {
 			motorA = new SaferMotor(MotorPort.A);
-			motorA.resetTachoCount();
 		}
 		return motorA;
 	}
@@ -32,7 +31,6 @@ public class RobotInfo {
 	public static SaferMotor getMotorB() {
 		if (motorB == null) {
 			motorB = new SaferMotor(MotorPort.B);
-			motorB.resetTachoCount();
 		}
 		return motorB;
 	}

@@ -338,7 +338,7 @@ public class Main {
 			int tB = motorB.getTachoCount();
 			
 			heading += ((tA - prevA) - (tB - prevB)) / 4;
-			System.out.println("Heading = " + heading);
+			System.out.println("Heading = " + heading%360);
 
 			travel += ((tA - prevA) - (tB - prevB)) / 4;
 
@@ -382,58 +382,6 @@ public class Main {
 		
 	public static boolean check_fields(int source, int flag) {
 		return (source & flag) != 0;
-	}
-	
-	
-	public static void runAssertions() {
-		System.out.println("Running tests...");
-		
-		SaferMotor motorA = RobotInfo.getMotorA();
-		SaferMotor motorB = RobotInfo.getMotorB(); 
-		
-		motorA.resetTachoCount();
-		motorB.resetTachoCount();
-
-		int prevA = motorA.getRealTachoCount();
-		int prevB = motorB.getRealTachoCount();
-		
-		motorA.setPower(80);
-		motorB.setPower(60);
-		
-		motorA.forward();
-		motorB.forward();
-
-		System.out.println("Start tacho A = " + prevA);
-		System.out.println("Start tacho B = " + prevB);
-
-		Delay.msDelay(1000);
-		
-		System.out.println("Mid tacho A = " + motorA.getRealTachoCount());
-		System.out.println("Mid tacho B = " + motorB.getRealTachoCount());
-		
-		System.out.println("Speed A = " + (motorA.getRealTachoCount() - prevA));
-		System.out.println("Speed B = " + (motorB.getRealTachoCount() - prevB));
-
-		System.out.println("AutoSpeed A = " + motorA.getTachoDiff());
-		System.out.println("AutoSpeed B = " + motorB.getTachoDiff());
-
-		prevA = motorA.getRealTachoCount();
-		prevB = motorB.getRealTachoCount();
-		
-		Delay.msDelay(1000);
-		
-		motorA.stop();
-		motorB.stop();
-		
-		System.out.println("End tacho A = " + motorA.getRealTachoCount());
-		System.out.println("End tacho B = " + motorB.getRealTachoCount());
-		
-		System.out.println("Speed A = " + (motorA.getRealTachoCount() - prevA));
-		System.out.println("Speed B = " + (motorB.getRealTachoCount() - prevB));
-
-		System.out.println("AutoSpeed A = " + motorA.getTachoDiff());
-		System.out.println("AutoSpeed B = " + motorB.getTachoDiff());
-		
 	}
 	
 }
