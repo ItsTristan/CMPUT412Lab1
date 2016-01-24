@@ -1,12 +1,13 @@
 package ca.ualberta;
 
 import lejos.hardware.Button;
+import lejos.hardware.motor.NXTMotor;
 import lejos.utility.Delay;
 
 public class deadReckoning {
 	public static final double wheeldiameter = 56;
 	public static final double wheelwidth = 28;
-	public static final double wheeltowheeldiameter = 150;
+	public static final double wheeltowheeldiameter = 128.5;
 	public static double heading = 0;
 	public static double x_loc = 0;
 	public static double y_loc = 0;
@@ -19,17 +20,12 @@ public class deadReckoning {
 	
 //	public static void main(String[] args) {		// Uncomment this to make this a compile target
 		public static void main() {
-		SaferMotor motorA = RobotInfo.getMotorA();
-		SaferMotor motorB = RobotInfo.getMotorB();
-		
-		motorA.resetTachoCount();
-		motorB.resetTachoCount();
+		NXTMotor motorA = RobotInfo.getMotorA();
+		NXTMotor motorB = RobotInfo.getMotorB();
 
 		double distancePerTick = wheeldiameter*Math.PI/360;	// = 2pi*r / 360 = arcdistance
 		double ticksPerRot = Math.PI*wheeltowheeldiameter/distancePerTick;
 		double radiansPerTick = (2*Math.PI)/ticksPerRot;
-		
-		
 		
 		
 		for (int i = 0; i<3; i++){
@@ -38,11 +34,11 @@ public class deadReckoning {
 
 			double prevA = motorA.getTachoCount();
 			double prevB = motorB.getTachoCount();
+			long now = System.currentTimeMillis();
 			
 			motorA.forward();
 			motorB.forward();
 			
-			long now = System.currentTimeMillis();
 			while (System.currentTimeMillis()-now < command[i][2]*1000){
 				//Delay.msDelay(20);
 				long t = System.currentTimeMillis();
@@ -76,7 +72,8 @@ public class deadReckoning {
 				prevB = currentB;
 				while(System.currentTimeMillis()-t<20){Delay.msDelay(1);};
 			}	
-			System.out.format("X = %.2f cm\nY = %.2f cm\n Heading = %.2f Radians\n\n", x_loc/10, y_loc/10, heading);
+			System.out.format("X = %.2f cm\nY = %.2f cm\n Heading = %.2f deg\n\n", 
+					x_loc/10, y_loc/10, Math.toDegrees(heading) % 360);
 		}
 		motorA.stop();
 		motorB.stop();

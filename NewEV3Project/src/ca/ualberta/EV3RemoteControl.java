@@ -19,9 +19,6 @@ public class EV3RemoteControl extends JFrame implements KeyListener {
 
 	public static RemoteEV3 ev3;
 
-	public static String MACaddress = "00:16:53:44:97:4F";
-	public static String address = "10.0.1.1";
-
 	public static RMIRegulatedMotor motorA;
 	public static RMIRegulatedMotor motorB;
 	
@@ -71,7 +68,7 @@ public class EV3RemoteControl extends JFrame implements KeyListener {
 
 	public void connect() throws RemoteException, MalformedURLException, NotBoundException {
 		System.out.println("Establishing link...");
-		ev3 = new RemoteEV3(address);
+		ev3 = new RemoteEV3(RobotInfo.address);
 		motorA = ev3.createRegulatedMotor("A", 'L');
 		motorB = ev3.createRegulatedMotor("B", 'L');
 		System.out.println("EV3 is Connected");

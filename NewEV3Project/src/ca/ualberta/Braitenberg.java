@@ -1,6 +1,7 @@
 package ca.ualberta;
 
 import lejos.hardware.Button;
+import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.sensor.NXTLightSensor;
 import lejos.utility.Delay;
 
@@ -18,8 +19,8 @@ public class Braitenberg {
 	public static void main() {
 		int mode;
 		
-		SaferMotor motorA = RobotInfo.getMotorA();
-		SaferMotor motorB = RobotInfo.getMotorB();
+		NXTMotor motorA = RobotInfo.getMotorA();
+		NXTMotor motorB = RobotInfo.getMotorB();
 
 		NXTLightSensor sensorA = RobotInfo.getSensorA();
 		NXTLightSensor sensorB = RobotInfo.getSensorB();
@@ -119,7 +120,7 @@ public class Braitenberg {
 	 * @param leftSignal
 	 * @param rightSignal
 	 */
-	public static void cowardMode(SaferMotor leftMotor, SaferMotor rightMotor, float leftSignal, float rightSignal) {
+	public static void cowardMode(NXTMotor leftMotor, NXTMotor rightMotor, float leftSignal, float rightSignal) {
 		int valueA = (int)(((leftSignal - loLevelA) / (hiLevelA - loLevelA))*(MAX_POWER-MIN_POWER)+MIN_POWER);
 		int valueB = (int)(((rightSignal - loLevelB) / (hiLevelB - loLevelB))*(MAX_POWER-MIN_POWER)+MIN_POWER);
 		
@@ -134,7 +135,7 @@ public class Braitenberg {
 	 * @param leftSignal
 	 * @param rightSignal
 	 */
-	public static void aggressiveMode(SaferMotor leftMotor, SaferMotor rightMotor, float leftSignal, float rightSignal) {
+	public static void aggressiveMode(NXTMotor leftMotor, NXTMotor rightMotor, float leftSignal, float rightSignal) {
 		int valueA = (int)(((leftSignal - loLevelA) / (hiLevelA - loLevelA))*(MAX_POWER-MIN_POWER)+MIN_POWER);
 		int valueB = (int)(((rightSignal - loLevelB) / (hiLevelB - loLevelB))*(MAX_POWER-MIN_POWER)+MIN_POWER);
 		
@@ -150,7 +151,7 @@ public class Braitenberg {
 	 * @param leftSignal
 	 * @param rightSignal
 	 */
-	public static void loveMode(SaferMotor leftMotor, SaferMotor rightMotor, float leftSignal, float rightSignal) {
+	public static void loveMode(NXTMotor leftMotor, NXTMotor rightMotor, float leftSignal, float rightSignal) {
 		int valueA = (int)(((leftSignal - loLevelA) / (hiLevelA - loLevelA))*(MAX_POWER-MIN_POWER)+MIN_POWER);
 		int valueB = (int)(((rightSignal - loLevelB) / (hiLevelB - loLevelB))*(MAX_POWER-MIN_POWER)+MIN_POWER);
 		
@@ -159,7 +160,7 @@ public class Braitenberg {
 		
 	}
 	
-	public static void exploreMode(SaferMotor leftMotor, SaferMotor rightMotor, float leftSignal, float rightSignal) {
+	public static void exploreMode(NXTMotor leftMotor, NXTMotor rightMotor, float leftSignal, float rightSignal) {
 		int valueA = (int)(((leftSignal - loLevelA) / (hiLevelA - loLevelA))*(MAX_POWER-MIN_POWER)+MIN_POWER);
 		int valueB = (int)(((rightSignal - loLevelB) / (hiLevelB - loLevelB))*(MAX_POWER-MIN_POWER)+MIN_POWER);
 		leftMotor.setPower(MAX_POWER - valueB);

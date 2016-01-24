@@ -1,24 +1,28 @@
 package ca.ualberta;
 
+import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.NXTLightSensor;
 
 public class RobotInfo {
-	private static SaferMotor motorA;
-	private static SaferMotor motorB;
+	private static NXTMotor motorA;
+	private static NXTMotor motorB;
 	
 	private static NXTLightSensor sensorA;
 	private static NXTLightSensor sensorB;
 
+	public static String MACaddress = "00:16:53:44:97:4F";
+	public static String address = "10.0.1.1";
+	
 	/**
 	 * Returns a singleton value for motor A.
 	 * Prevents errors when initializing the motors.
 	 * @return
 	 */
-	public static SaferMotor getMotorA() {
+	public static NXTMotor getMotorA() {
 		if (motorA == null) {
-			motorA = new SaferMotor(MotorPort.A);
+			motorA = new NXTMotor(MotorPort.A);
 		}
 		return motorA;
 	}
@@ -28,9 +32,9 @@ public class RobotInfo {
 	 * Prevents errors when initializing the motors.
 	 * @return
 	 */
-	public static SaferMotor getMotorB() {
+	public static NXTMotor getMotorB() {
 		if (motorB == null) {
-			motorB = new SaferMotor(MotorPort.B);
+			motorB = new NXTMotor(MotorPort.B);
 		}
 		return motorB;
 	}

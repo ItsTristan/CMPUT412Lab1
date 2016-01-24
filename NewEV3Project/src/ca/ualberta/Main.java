@@ -5,6 +5,7 @@ package ca.ualberta;
 */
 
 import lejos.hardware.Button;
+import lejos.hardware.motor.NXTMotor;
 import lejos.robotics.EncoderMotor;
 import lejos.utility.Delay;
 
@@ -95,8 +96,8 @@ public class Main {
 	 * @return
 	 */
 	public static void manual_control() {
-		SaferMotor motorA = RobotInfo.getMotorA();
-		SaferMotor motorB = RobotInfo.getMotorB();
+		NXTMotor motorA = RobotInfo.getMotorA();
+		NXTMotor motorB = RobotInfo.getMotorB();
 		
 		while (true) {
 			System.out.println("Waiting for input...");
