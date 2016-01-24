@@ -13,7 +13,7 @@ public class deadReckoning {
 	
 	static int[][] command = {
 		      { 80, 60, 2},
-		      { 60, 60, 1},
+		      { 60, 60, 1}, 
 		      {-50, 80, 2}
 		    };
 	
