@@ -11,6 +11,10 @@ public class Braitenberg {
 	static float hiLevelA = 0.0f;	// High light level calibration
 	static float hiLevelB = 0.0f;
 	
+	static final int MIN_POWER = 0;
+	static final int MAX_POWER = 100;
+	
+	
 	public static void main() {
 		int mode;
 		
@@ -116,8 +120,8 @@ public class Braitenberg {
 	 * @param rightSignal
 	 */
 	public static void cowardMode(SaferMotor leftMotor, SaferMotor rightMotor, float leftSignal, float rightSignal) {
-		int valueA = (int)(100*(leftSignal - loLevelA) / (hiLevelA - loLevelA));
-		int valueB = (int)(100*(rightSignal - loLevelB) / (hiLevelB - loLevelB));
+		int valueA = (int)(((leftSignal - loLevelA) / (hiLevelA - loLevelA))*(MAX_POWER-MIN_POWER)+MIN_POWER);
+		int valueB = (int)(((rightSignal - loLevelB) / (hiLevelB - loLevelB))*(MAX_POWER-MIN_POWER)+MIN_POWER);
 		
 		leftMotor.setPower(valueA);
 		rightMotor.setPower(valueB);
@@ -131,8 +135,8 @@ public class Braitenberg {
 	 * @param rightSignal
 	 */
 	public static void aggressiveMode(SaferMotor leftMotor, SaferMotor rightMotor, float leftSignal, float rightSignal) {
-		int valueA = (int)(100*(leftSignal - loLevelA) / (hiLevelA - loLevelA));
-		int valueB = (int)(100*(rightSignal - loLevelB) / (hiLevelB - loLevelB));
+		int valueA = (int)(((leftSignal - loLevelA) / (hiLevelA - loLevelA))*(MAX_POWER-MIN_POWER)+MIN_POWER);
+		int valueB = (int)(((rightSignal - loLevelB) / (hiLevelB - loLevelB))*(MAX_POWER-MIN_POWER)+MIN_POWER);
 		
 		leftMotor.setPower(valueB);
 		rightMotor.setPower(valueA);
@@ -147,20 +151,19 @@ public class Braitenberg {
 	 * @param rightSignal
 	 */
 	public static void loveMode(SaferMotor leftMotor, SaferMotor rightMotor, float leftSignal, float rightSignal) {
-		int valueA = (int)(100*(leftSignal - loLevelA) / (hiLevelA - loLevelA));
-		int valueB = (int)(100*(rightSignal - loLevelB) / (hiLevelB - loLevelB));
+		int valueA = (int)(((leftSignal - loLevelA) / (hiLevelA - loLevelA))*(MAX_POWER-MIN_POWER)+MIN_POWER);
+		int valueB = (int)(((rightSignal - loLevelB) / (hiLevelB - loLevelB))*(MAX_POWER-MIN_POWER)+MIN_POWER);
 		
-		leftMotor.setPower(100 - valueA);
-		rightMotor.setPower(100 - valueB);
+		leftMotor.setPower(MAX_POWER - valueA);
+		rightMotor.setPower(MAX_POWER - valueB);
 		
 	}
 	
 	public static void exploreMode(SaferMotor leftMotor, SaferMotor rightMotor, float leftSignal, float rightSignal) {
-		int valueA = (int)(100*(leftSignal - loLevelA) / (hiLevelA - loLevelA));
-		int valueB = (int)(100*(rightSignal - loLevelB) / (hiLevelB - loLevelB));
-		
-		leftMotor.setPower(100 - valueB);
-		rightMotor.setPower(100 - valueA);
+		int valueA = (int)(((leftSignal - loLevelA) / (hiLevelA - loLevelA))*(MAX_POWER-MIN_POWER)+MIN_POWER);
+		int valueB = (int)(((rightSignal - loLevelB) / (hiLevelB - loLevelB))*(MAX_POWER-MIN_POWER)+MIN_POWER);
+		leftMotor.setPower(MAX_POWER - valueB);
+		rightMotor.setPower(MAX_POWER - valueA);
 	}
 	
 	public static int selectMode() {

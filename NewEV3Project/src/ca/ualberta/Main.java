@@ -20,8 +20,11 @@ public class Main {
 	public static final float meanwheeldistance = 128f;
 	public static final float minwheeldistance = 100f;
 	public static final float maxwheeldistance = 156f;
+	public static final float wheeltowheeldistance = 106.30f;	// Adjusted
 	
-	public static float heading = 0;
+	public static final int MAX_SPEED = motorspeed+5;
+	
+	public static final int correction_threshold = 1;
 	
 	/**
 	 * Mode:
@@ -185,16 +188,16 @@ public class Main {
 	 * @param motorB
 	 */
 	public static void driveSquare(EncoderMotor motorA, EncoderMotor motorB) {
-		moveForward(motorA,motorB, 2);
+		moveForward(motorA,motorB, 2f);
 		turnClockwise(motorA,motorB);
 		
-		moveForward(motorA,motorB, 3);
+		moveForward(motorA,motorB, 2f);
 		turnClockwise(motorA,motorB);
 		
-		moveForward(motorA,motorB, 2);
+		moveForward(motorA,motorB, 2f);
 		turnClockwise(motorA,motorB);
 		
-		moveForward(motorA,motorB, 3);
+		moveForward(motorA,motorB, 2f);
 		turnClockwise(motorA,motorB);
 	}
 	
@@ -279,38 +282,6 @@ public class Main {
 		turnClockwise(motorB, motorA, 90);
 	}
 	
-//	public static void turnCounterClockwise(EncoderMotor motorA, EncoderMotor motorB, int degrees) {
-//		// CounterClockwise and Clockwise can be factored together more nicely,
-//		// but pay attention to the signs on the heading counter.
-//		motorA.setPower(motorspeed);
-//		motorB.setPower(motorspeed);
-//		
-//		int prevA = motorA.getTachoCount();
-//		int prevB = motorB.getTachoCount();
-//		
-//		float travel = 0f;
-//		
-//		motorA.backward();
-//		motorB.forward();
-//		
-//		while (travel < degrees) {
-//			int tA = motorA.getTachoCount();
-//			int tB = motorB.getTachoCount();
-//
-//			heading += ((tA - prevA) - (tB - prevB) ) / 4;
-//
-//			travel -= ((tA - prevA) - (tB - prevB)) / 4;
-//
-//			prevA = tA;
-//			prevB = tB;
-//		}
-//		
-//		System.out.println("Heading = " + heading);
-//		
-//		motorA.stop();
-//		motorB.stop();
-//	}
-	
 	public static void turnClockwise(EncoderMotor motorA, EncoderMotor motorB) {
 		turnClockwise(motorA, motorB, 90);
 	}
@@ -332,15 +303,21 @@ public class Main {
 		
 		motorA.forward();
 		motorB.backward();
+
+		double distancePerTick = wheeldiameter*Math.PI/360;	// = 2pi*r / 360 = arcdistance
+		double ticksPerRot = Math.PI*meanwheeldistance/distancePerTick;
+		double radiansPerTick = (2*Math.PI)/ticksPerRot;
 		
-		while (travel < degrees) {
+		while (Math.abs(travel - degrees) > 1.5f && travel < degrees) {
 			int tA = motorA.getTachoCount();
 			int tB = motorB.getTachoCount();
 			
-			heading += ((tA - prevA) - (tB - prevB)) / 4;
-			System.out.println("Heading = " + heading%360);
+			float speedA = tA-prevA;
+			float speedB = tB-prevB;
 
-			travel += ((tA - prevA) - (tB - prevB)) / 4;
+			travel += Math.abs((speedB-speedA)/2*wheeldiameter/wheeltowheeldistance);
+			
+			System.out.println("Travel = " + travel%360);
 
 			prevA = tA;
 			prevB = tB;
@@ -362,22 +339,25 @@ public class Main {
 		int bSpeed = motorB.getPower();
 		int aSpeed = motorA.getPower();
 		
-		if (difference > 5){
-			if (bSpeed <= 95){
+		if (difference > correction_threshold){
+			if (bSpeed <= MAX_SPEED){
 				motorB.setPower(bSpeed+1);
 			}
 			else{
 				motorA.setPower(aSpeed-1);
 			}
 		}
-		if (difference < -5){
-			if (aSpeed <= 95){
+		if (difference < -correction_threshold){
+			if (aSpeed <= MAX_SPEED){
 				motorA.setPower(aSpeed+1);
 			}
 			else{
 				motorB.setPower(bSpeed-1);
 			}
 		}
+		
+		motorA.forward();
+		motorB.forward();
 	}
 		
 	public static boolean check_fields(int source, int flag) {
