@@ -32,8 +32,6 @@ public class deadReckoning {
 			motorA.forward();
 			motorB.forward();
 
-			
-			
 			double prevA = motorA.getRealTachoCount();
 			double prevB = motorB.getRealTachoCount();
 			

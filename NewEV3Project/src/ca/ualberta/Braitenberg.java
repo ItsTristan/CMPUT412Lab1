@@ -181,13 +181,13 @@ public class Braitenberg {
 				break;
 			}
 			int btn = Button.waitForAnyPress();
-			if (test1.check_fields(btn, Button.ID_DOWN)){
+			if (Main.check_fields(btn, Button.ID_DOWN)){
 				choice = (choice + 1) % 4;
 			}
-			else if (test1.check_fields(btn, Button.ID_UP)){
+			else if (Main.check_fields(btn, Button.ID_UP)){
 				choice = (choice + 3) % 4;
 			}
-			else if (test1.check_fields(btn, Button.ID_ENTER)) {
+			else if (Main.check_fields(btn, Button.ID_ENTER)) {
 				return choice;
 			}
 		}

@@ -8,7 +8,7 @@ import lejos.hardware.Button;
 import lejos.robotics.EncoderMotor;
 import lejos.utility.Delay;
 
-public class test1 {
+public class Main {
 
 	public static final int motorspeed = 80;
 	public static final int finespeed = 10;
@@ -25,34 +25,58 @@ public class test1 {
 	
 	/**
 	 * Mode:
-	 * -1 = Tests
 	 *  0 = Manual Control
 	 *  1 = Dead Reckoning
 	 *  2 = Braitenberg
-	 *  3 = Teleoperation
+	 *  
+	 * 	(4 = Tests)
 	 */
-	public static int mode = 3; // change this sometime
+	public static int num_modes = 3;
 
 	public static void main(String[] args) {
-		
-		switch(mode) {
-		case -1:
-			runAssertions();
-			break;
-		case 0:
-			manual_control();
-			break;
-		case 1:
-			deadReckoning.main();
-			break;
-		case 2:
-			Braitenberg.main();
-			break;
-		case 3:
-//			EV3tr.main();
-			break;
+		selectMode();
+	}
+	
+	public static void selectMode() {
+		System.out.println("Select Mode:");
+		int choice = 0;
+		while (true) {
+			switch (choice) {
+			case 0:
+				System.out.println("Manual Control");
+				break;
+			case 1:
+				System.out.println("Dead Reckoning");
+				break;
+			case 2:
+				System.out.println("Braitenberg");
+				break;
+			}
+			
+			int btn = Button.waitForAnyPress();
+			if (check_fields(btn, Button.ID_DOWN)){
+				choice = (choice + 1) % num_modes;
+			}
+			else if (check_fields(btn, Button.ID_UP)){
+				choice = (choice + num_modes-1) % num_modes;
+			}
+			else if (check_fields(btn, Button.ID_ENTER)) {
+				switch(choice) {
+				case 0:
+					manual_control();
+					break;
+				case 1:
+					deadReckoning.main();
+					break;
+				case 2:
+					Braitenberg.main();
+					break;
+				}
+				return;
+			} else if (check_fields(btn, Button.ID_ESCAPE)){
+				return;
+			}
 		}
-		
 	}
 	
 	/**
