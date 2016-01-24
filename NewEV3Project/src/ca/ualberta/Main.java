@@ -23,7 +23,15 @@ public class test1 {
 	
 	public static float heading = 0;
 	
-	public static int mode = 2; // change this sometime
+	/**
+	 * Mode:
+	 * -1 = Tests
+	 *  0 = Manual Control
+	 *  1 = Dead Reckoning
+	 *  2 = Braitenberg
+	 *  3 = Teleoperation
+	 */
+	public static int mode = 3; // change this sometime
 
 	public static void main(String[] args) {
 		
@@ -39,6 +47,9 @@ public class test1 {
 			break;
 		case 2:
 			Braitenberg.main();
+			break;
+		case 3:
+//			EV3tr.main();
 			break;
 		}
 		
