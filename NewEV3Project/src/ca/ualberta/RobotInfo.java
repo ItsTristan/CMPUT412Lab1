@@ -3,14 +3,18 @@ package ca.ualberta;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.NXTLightSensor;
 
 public class RobotInfo {
 	private static NXTMotor motorA;
 	private static NXTMotor motorB;
 	
-	private static NXTLightSensor sensorA;
-	private static NXTLightSensor sensorB;
+	private static NXTLightSensor lightSensorA;
+	private static NXTLightSensor lightSensorB;
+	private static EV3UltrasonicSensor usSensorC;
+	private static EV3GyroSensor gySensorD;
 
 	public static String MACaddress = "00:16:53:44:97:4F";
 	public static String address = "10.0.1.1";
@@ -45,10 +49,10 @@ public class RobotInfo {
 	 * @return
 	 */
 	public static NXTLightSensor getSensorA() {
-		if (sensorA == null) {
-			sensorA = new NXTLightSensor(SensorPort.S1);
+		if (lightSensorA == null) {
+			lightSensorA = new NXTLightSensor(SensorPort.S1);
 		}
-		return sensorA;
+		return lightSensorA;
 	}
 
 	/**
@@ -57,10 +61,28 @@ public class RobotInfo {
 	 * @return
 	 */
 	public static NXTLightSensor getSensorB() {
-		if (sensorB == null) {
-			sensorB = new NXTLightSensor(SensorPort.S2);
+		if (lightSensorB == null) {
+			lightSensorB = new NXTLightSensor(SensorPort.S2);
 		}
-		return sensorB;
+		return lightSensorB;
 	}
 	
+	/**
+	 * Returns a singleton value for ultrasonic sensor corresponding to C
+	 * Prevents errors when initializing the motors.
+	 * @return
+	 */
+	public static EV3UltrasonicSensor getSensorC() {
+		if (usSensorC == null) {
+			usSensorC = new EV3UltrasonicSensor(SensorPort.S3);
+		}
+		return usSensorC;
+	}
+	
+	public static EV3GyroSensor getSensorD() {
+		if (gySensorD == null) {
+			gySensorD = new EV3GyroSensor(SensorPort.S4);
+		}
+		return gySensorD;
+	}
 }

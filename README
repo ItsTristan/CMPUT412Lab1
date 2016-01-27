@@ -1,0 +1,10 @@
+Differential Drive
+
+Falon Scheers
+Tristan Meleshko
+CMPUT412
+
+The remote control needs to be run from the PC by running ev3bluetooth from the command line before running the remote control. No menu action on the brick is required.
+
+to run the rest of the program, the main.jar file needs to be compiled and uploaded and from the menu each section can be selected. Press enter to select and up/down to change options in menu. 
+

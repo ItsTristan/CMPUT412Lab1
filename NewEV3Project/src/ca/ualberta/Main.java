@@ -6,7 +6,9 @@ package ca.ualberta;
 
 import lejos.hardware.Button;
 import lejos.hardware.motor.NXTMotor;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.EncoderMotor;
+import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 
 public class Main {
@@ -90,11 +92,12 @@ public class Main {
 	 * Up to move forward,
 	 * Left/Right to rotate 90 degrees
 	 * Enter opens the menu
-	 * 
+	 * usSensorC.get
 	 * @param motorA
 	 * @param motorB
 	 * @return
 	 */
+		
 	public static void manual_control() {
 		NXTMotor motorA = RobotInfo.getMotorA();
 		NXTMotor motorB = RobotInfo.getMotorB();
@@ -253,22 +256,29 @@ public class Main {
 		driveCircle(motorB, motorA);
 	}
 	
-	/// section: motor controls
-	
 	public static void moveForward(EncoderMotor motorA, EncoderMotor motorB, float rotations) {
 		motorA.setPower(motorspeed);
 		motorB.setPower(motorspeed);
 		
 		int startA = motorA.getTachoCount();
-		
+		int startB = motorB.getTachoCount();
 		int prevAt = startA;
 		int prevBt = motorB.getTachoCount();
 		
+		//US sensor used for error accumulation measure
+		EV3UltrasonicSensor usSensorC = RobotInfo.getSensorC();
+		SampleProvider distanceMode = usSensorC.getDistanceMode();
+		float[] sample = new float[distanceMode.sampleSize()]; 
+		distanceMode.fetchSample(sample, 0);
+		float sensorReadingStart = sample[0];
+		
 		motorA.forward();
 		motorB.forward();
+		if (usSensorC.isEnabled() == false){ usSensorC.enable();}
 		while (motorA.getTachoCount()- startA < 360*rotations){
 			int tA = motorA.getTachoCount();
 			int tB = motorB.getTachoCount();
+			
 			correctSpeed(motorA, motorB, tA-prevAt, tB-prevBt);
 			Delay.msDelay(5);
 			prevAt = tA;
@@ -276,6 +286,16 @@ public class Main {
 		}
 		motorA.stop();
 		motorB.stop();
+		Delay.msDelay(200);
+		
+		// for the error accumulation measure, report calculated distance moved
+		distanceMode.fetchSample(sample, 0);
+		float sensorNewReading = sample[0];
+		float distSensor = Math.abs(sensorNewReading - sensorReadingStart);
+		double distanceA = (motorA.getTachoCount()-startA)*Math.PI*wheeldiameter/360;
+		double distanceB = (motorB.getTachoCount()-startB)*Math.PI*wheeldiameter/360;
+		System.out.format("DistA = %.2fcm\nDistB = %.2fcm\n", distanceA/10, distanceB/10);
+		System.out.format("Senstart= %.2fcm\nSendist: %.2fcm\n", sensorReadingStart*100, distSensor*100);
 	}
 	
 	public static void turnCounterClockwise(EncoderMotor motorA, EncoderMotor motorB) {
@@ -316,7 +336,7 @@ public class Main {
 			float speedA = tA-prevA;
 			float speedB = tB-prevB;
 
-			travel += Math.abs((speedB-speedA)/2*wheeldiameter/wheeltowheeldistance);
+			travel += Math.abs(((speedB-speedA)/2)*(wheeldiameter/wheeltowheeldistance));
 			
 			System.out.println("Travel = " + travel%360);
 
